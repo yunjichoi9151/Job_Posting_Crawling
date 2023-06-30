@@ -14,7 +14,7 @@ options.add_argument('--disable-dev-shm-usage')
 driver = webdriver.Chrome()
 
 # 네이버 인재영입 페이지 접속
-print('[NAVER]')
+print('\n[NAVER]\n')
 naver_url = 'https://recruit.navercorp.com/rcrt/list.do?subJobCdArr=1010001%2C1010002%2C1010003%2C1010004%2C1010005%2C1010006%2C1010007%2C1010008%2C1010020%2C1020001%2C1030001%2C1030002%2C1040001%2C1050001%2C1050002%2C1060001&sysCompanyCdArr=&empTypeCdArr=&entTypeCdArr=&workAreaCdArr=&sw=&subJobCdData=1010001&subJobCdData=1010002&subJobCdData=1010003&subJobCdData=1010004&subJobCdData=1010005&subJobCdData=1010006&subJobCdData=1010007&subJobCdData=1010008&subJobCdData=1010020&subJobCdData=1020001&subJobCdData=1030001&subJobCdData=1030002&subJobCdData=1040001&subJobCdData=1050001&subJobCdData=1050002&subJobCdData=1060001'
 driver.get(naver_url)
 naver_num = 1
@@ -62,7 +62,7 @@ for naver_job_element in naver_job_elements:
 time.sleep(3)
 
 # 카카오 인재영입 페이지 접속
-print('[kakao]')
+print('\n[kakao]\n')
 kakao_url = 'https://careers.kakao.com/jobs'
 driver.get(kakao_url)
 kakao_num = 1
@@ -94,7 +94,7 @@ for kakao_job_element in kakao_job_elements:
 time.sleep(3)
 
 # LG 인재영입 페이지 접속
-print('[LG]')
+print('\n[LG]\n')
 url = 'https://careers.lg.com/app/job/RetrieveJobNotices.rpi'
 driver.get(url)
 LG_num = 1
@@ -130,5 +130,39 @@ for LG_job_element in LG_job_elements:
     print(LG_num, '. ', LG_job_title, ' [', LG_job_info[0][0:-16], ']', sep='')
     print(' ' * (int)(len(str(LG_num)) + 2), '[ ', LG_job_info[1], ' | ', LG_job_info[2], ' | ', LG_job_info[3], ' | ', LG_job_info[0][-16:], ' ]', sep='')
     LG_num += 1
+
+# 현대오토에버 채용정보 페이지 접속
+print('\n[현대오토에버]\n')
+url = 'https://hyundai-autoever.recruiter.co.kr/app/jobnotice/list'
+driver.get(url)
+AutoEver_num = 1
+
+# 현대오토에버 신입채용 버튼 클릭
+wait = WebDriverWait(driver, 10)
+filed_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="divTabList"]/ul/li[2]/a')))
+filed_button.click()
+time.sleep(3)
+
+# 현대오토에버 채용공고 리스트 가져오기
+AutoEver_job_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//div[@id='divJobnoticeList']/ul")))
+
+# 현대오토에버 채용공고 각각 가져오기
+AutoEver_job_elements = AutoEver_job_list.find_elements(By.XPATH, ".//li")
+
+# 각 채용공고 출력
+for AutoEver_job_element in AutoEver_job_elements:
+    # 채용공고 제목
+    AutoEver_title_element = AutoEver_job_element.find_element(By.XPATH, ".//h2[@class='list-bbs-title']/span[@class='list-bbs-notice-name']/a")
+    AutoEver_title = AutoEver_title_element.text
+    # 채용공고 접수기간
+    AutoEver_date_element = AutoEver_job_element.find_element(By.XPATH, ".//span[@class='list-bbs-date']")
+    AutoEver_date = AutoEver_date_element.text
+    # 채용공고 상태
+    AutoEver_status_element = AutoEver_job_element.find_element(By.XPATH, ".//div[@class='list-bbs-status']/span")
+    AutoEver_status = AutoEver_status_element.text
+    # 출력
+    print(AutoEver_num, '. ', AutoEver_title, sep='')
+    print(' ' * (int)(len(str(AutoEver_num)) + 2), '[ ', AutoEver_status, ' | ', AutoEver_date, ' ]', sep='')
+    AutoEver_num += 1
 # WebDriver 종료
 driver.quit()
