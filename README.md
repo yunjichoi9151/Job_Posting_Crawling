@@ -2,7 +2,8 @@
 
 ### [채용공고]
 
-1. NAVER
-2. kakao
-3. LG
-4. HYUNDAI AutoEver
+1. SAMSUNG
+2. LG
+3. HYUNDAI AutoEver
+4. NAVER
+5. kakao
