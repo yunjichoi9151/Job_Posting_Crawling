@@ -6,12 +6,125 @@ import time
 
 # Selenium WebDriver 설정
 options = webdriver.ChromeOptions()
-options.add_argument('--headless')
-options.add_argument('--no-sandbox')
-options.add_argument('--disable-dev-shm-usage')
+# options.add_argument('--headless')
+# options.add_argument('--no-sandbox')
+# options.add_argument('--disable-dev-shm-usage')
+options.add_argument('--log-level=3')
 
 # WebDriver 인스턴스 생성
-driver = webdriver.Chrome()
+driver = webdriver.Chrome(options=options)
+
+# 삼성 채용정보 페이지 접속
+print('\n[삼성]\n')
+url = 'https://www.samsungcareers.com/hr/'
+driver.get(url)
+samsung_num = 1
+time.sleep(3)
+
+# 삼성 채용공고 리스트 가져오기
+samsung_job_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="list"]')))
+
+# 삼성 채용공고 각각 가져오기
+samsung_job_elements = samsung_job_list.find_elements(By.TAG_NAME, 'li')
+
+# 각 채용공고 출력
+for samsung_job_element in samsung_job_elements:
+    # 채용공고 제목
+    samsung_job_title = samsung_job_element.find_element(By.XPATH, "./div/div/a/h3[@class='title']").text
+    # 채용공고 회사정보
+    samsung_company = samsung_job_element.find_element(By.XPATH, "./div/div/a/p[@class='company']").text
+    # 채용공고 직원유형
+    samsung_type = samsung_job_element.find_element(By.XPATH, "./div/div/a/p[@class='info']/span[1]").text
+    # 채용공고 기간
+    samsung_date = samsung_job_element.find_element(By.XPATH, "./div/div/a/p[@class='info']/span[2]").text
+    # 채용공고 D-Day
+    samsung_d_day = samsung_job_element.find_element(By.XPATH, "./div/div[@class='flagWrap']/span[@class='flag blue']").text
+    # 채용공고 업무
+    samsung_work_list = samsung_job_element.find_element(By.XPATH, "./div/div[@class='flagWrap']")
+    job_tasks = []
+    samsung_work_elements = samsung_work_list.find_elements(By.XPATH, "./span[@class='flag grey']")
+    for samsung_work_element in samsung_work_elements:
+        job_task = samsung_work_element.text
+        job_tasks.append(job_task)
+    # 출력
+    print(samsung_num, '. ', samsung_job_title, ' [', samsung_d_day.replace(" ", ""), ']', sep='')
+    print(' ' * (int)(len(str(samsung_num)) + 2), '[ ', samsung_company, ' | ', samsung_type, ' | ', samsung_date, ' | ', job_tasks[0], ' ⋯' if len(job_tasks) >= 2 else '', ' ]', sep='')
+    samsung_num += 1
+time.sleep(3)
+
+# LG 인재영입 페이지 접속
+print('\n[LG]\n')
+url = 'https://careers.lg.com/app/job/RetrieveJobNotices.rpi'
+driver.get(url)
+LG_num = 1
+
+# LG 분야 버튼 클릭
+wait = WebDriverWait(driver, 10)
+field_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="lnb"]/div[1]/ul/li[2]/div[1]/button')))
+field_button.click()
+time.sleep(3)
+
+# LG IT서비스 버튼 클릭
+it_service_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="lnb"]/div[1]/ul/li[2]/div[2]/div/ul/li[7]/a')))
+it_service_button.click()
+time.sleep(3)
+
+# LG 채용공고 리스트 가져오기
+LG_job_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="jobNoticesList"]/div')))
+
+# LG 채용공고 각각 가져오기
+LG_job_elements = LG_job_list.find_elements(By.XPATH, './/div[contains(@id, "scroll_")]')
+
+# 각 채용공고 출력
+for LG_job_element in LG_job_elements:
+    # 채용공고 제목
+    LG_job_title_element = LG_job_element.find_element(By.XPATH, './/ul[@class="adListTitle"]/li/a')
+    LG_job_title = LG_job_title_element.text
+    # 채용공고 상세정보(회사, 경력여부, 분야, 마감일)
+    adListInfo_elements = LG_job_element.find_elements(By.XPATH, './/ul[@class="adListInfo"]/li')
+    LG_job_info = []
+    for element in adListInfo_elements:
+        LG_job_info.append(element.text.strip())
+    # 출력
+    print(LG_num, '. ', LG_job_title, ' [', LG_job_info[0][0:-16], ']', sep='')
+    print(' ' * (int)(len(str(LG_num)) + 2), '[ ', LG_job_info[1], ' | ', LG_job_info[2], ' | ', LG_job_info[3], ' | ', LG_job_info[0][-16:], ' ]', sep='')
+    LG_num += 1
+time.sleep(3)
+
+# 현대오토에버 채용정보 페이지 접속
+print('\n[현대오토에버]\n')
+url = 'https://hyundai-autoever.recruiter.co.kr/app/jobnotice/list'
+driver.get(url)
+AutoEver_num = 1
+
+# 현대오토에버 신입채용 버튼 클릭
+wait = WebDriverWait(driver, 10)
+filed_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="divTabList"]/ul/li[2]/a')))
+filed_button.click()
+time.sleep(3)
+
+# 현대오토에버 채용공고 리스트 가져오기
+AutoEver_job_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//div[@id='divJobnoticeList']/ul")))
+
+# 현대오토에버 채용공고 각각 가져오기
+AutoEver_job_elements = AutoEver_job_list.find_elements(By.XPATH, ".//li")
+
+# 각 채용공고 출력
+for AutoEver_job_element in AutoEver_job_elements:
+    # 채용공고 제목
+    AutoEver_title_element = AutoEver_job_element.find_element(By.XPATH, ".//h2[@class='list-bbs-title']/span[@class='list-bbs-notice-name']/a")
+    AutoEver_title = AutoEver_title_element.text
+    # 채용공고 접수기간
+    AutoEver_date_element = AutoEver_job_element.find_element(By.XPATH, ".//span[@class='list-bbs-date']")
+    AutoEver_date = AutoEver_date_element.text
+    # 채용공고 상태
+    AutoEver_status_element = AutoEver_job_element.find_element(By.XPATH, ".//div[@class='list-bbs-status']/span")
+    AutoEver_status = AutoEver_status_element.text
+    # 출력
+    print(AutoEver_num, '. ', AutoEver_title, sep='')
+    print(' ' * (int)(len(str(AutoEver_num)) + 2), '[ ', AutoEver_status, ' | ', AutoEver_date, ' ]', sep='')
+    AutoEver_num += 1
+time.sleep(3)
 
 # 네이버 인재영입 페이지 접속
 print('\n[NAVER]\n')
@@ -92,77 +205,5 @@ for kakao_job_element in kakao_job_elements:
     print('   [ ', kakao_company, ' | ', kakao_type, ' | ', kakao_endtime, ' ]', sep='')
     kakao_num += 1
 time.sleep(3)
-
-# LG 인재영입 페이지 접속
-print('\n[LG]\n')
-url = 'https://careers.lg.com/app/job/RetrieveJobNotices.rpi'
-driver.get(url)
-LG_num = 1
-
-# LG 분야 버튼 클릭
-wait = WebDriverWait(driver, 10)
-field_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="lnb"]/div[1]/ul/li[2]/div[1]/button')))
-field_button.click()
-time.sleep(3)
-
-# LG IT서비스 버튼 클릭
-it_service_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="lnb"]/div[1]/ul/li[2]/div[2]/div/ul/li[7]/a')))
-it_service_button.click()
-time.sleep(3)
-
-# LG 채용공고 리스트 가져오기
-LG_job_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="jobNoticesList"]/div')))
-
-# LG 채용공고 각각 가져오기
-LG_job_elements = LG_job_list.find_elements(By.XPATH, './/div[contains(@id, "scroll_")]')
-
-# 각 채용공고 출력
-for LG_job_element in LG_job_elements:
-    # 채용공고 제목
-    LG_job_title_element = LG_job_element.find_element(By.XPATH, './/ul[@class="adListTitle"]/li/a')
-    LG_job_title = LG_job_title_element.text
-    # 채용공고 상세정보(회사, 경력여부, 분야, 마감일)
-    adListInfo_elements = LG_job_element.find_elements(By.XPATH, './/ul[@class="adListInfo"]/li')
-    LG_job_info = []
-    for element in adListInfo_elements:
-        LG_job_info.append(element.text.strip())
-    # 출력
-    print(LG_num, '. ', LG_job_title, ' [', LG_job_info[0][0:-16], ']', sep='')
-    print(' ' * (int)(len(str(LG_num)) + 2), '[ ', LG_job_info[1], ' | ', LG_job_info[2], ' | ', LG_job_info[3], ' | ', LG_job_info[0][-16:], ' ]', sep='')
-    LG_num += 1
-
-# 현대오토에버 채용정보 페이지 접속
-print('\n[현대오토에버]\n')
-url = 'https://hyundai-autoever.recruiter.co.kr/app/jobnotice/list'
-driver.get(url)
-AutoEver_num = 1
-
-# 현대오토에버 신입채용 버튼 클릭
-wait = WebDriverWait(driver, 10)
-filed_button = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="divTabList"]/ul/li[2]/a')))
-filed_button.click()
-time.sleep(3)
-
-# 현대오토에버 채용공고 리스트 가져오기
-AutoEver_job_list = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//div[@id='divJobnoticeList']/ul")))
-
-# 현대오토에버 채용공고 각각 가져오기
-AutoEver_job_elements = AutoEver_job_list.find_elements(By.XPATH, ".//li")
-
-# 각 채용공고 출력
-for AutoEver_job_element in AutoEver_job_elements:
-    # 채용공고 제목
-    AutoEver_title_element = AutoEver_job_element.find_element(By.XPATH, ".//h2[@class='list-bbs-title']/span[@class='list-bbs-notice-name']/a")
-    AutoEver_title = AutoEver_title_element.text
-    # 채용공고 접수기간
-    AutoEver_date_element = AutoEver_job_element.find_element(By.XPATH, ".//span[@class='list-bbs-date']")
-    AutoEver_date = AutoEver_date_element.text
-    # 채용공고 상태
-    AutoEver_status_element = AutoEver_job_element.find_element(By.XPATH, ".//div[@class='list-bbs-status']/span")
-    AutoEver_status = AutoEver_status_element.text
-    # 출력
-    print(AutoEver_num, '. ', AutoEver_title, sep='')
-    print(' ' * (int)(len(str(AutoEver_num)) + 2), '[ ', AutoEver_status, ' | ', AutoEver_date, ' ]', sep='')
-    AutoEver_num += 1
 # WebDriver 종료
 driver.quit()
