@@ -143,7 +143,7 @@ for naver_job_element in naver_job_elements:
     # 채용공고 제목
     naver_job_title_element = naver_job_element.find_element(By.XPATH, ".//h4[@class='card_title']")
     naver_job_title = naver_job_title_element.text
-    naver_job_info_element = driver.find_element(By.CLASS_NAME, 'card_info')
+    naver_job_info_element = naver_job_element.find_element(By.CLASS_NAME, 'card_info')
     # 모집 부서
     naver_job_department_element = naver_job_info_element.find_element(By.XPATH, ".//dt[text()='모집 부서']")
     naver_job_department_dd = naver_job_department_element.find_element(By.XPATH, "following-sibling::dd[@class='info_text']")
